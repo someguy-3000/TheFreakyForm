@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Freaky Form™</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: #ffffff;
+    color: #0a0a0a;
+    min-height: 100vh;
+  }
+  .page { display: none; min-height: 100vh; padding: 14px 12px 40px; }
+  .page.active { display: block; }
+
+  .box {
+    max-width: 560px;
+    margin: 10px auto;
+    background: #ffffff;
+    border: 3px double #0a0a0a;
+    box-shadow: 6px 6px 0 #0a0a0a;
+    padding: 16px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.7em;
+    color: #0a0a0a;
+    margin: 0 0 10px;
+  }
+  h2 { color: #0a0a0a; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0; }
+
+  .credentials {
+    background: #f2f2f2;
+    border: 2px dashed #0a0a0a;
+    padding: 10px;
+    margin-bottom: 12px;
+    font-size: 1em;
+    text-align: center;
+  }
+  .credentials b { color: #0a0a0a; }
+
+  label { display:block; margin-top: 10px; font-weight: bold; }
+  input[type=text], input[type=password] {
+    width: 100%;
+    padding: 8px;
+    font-size: 1em;
+    border: 2px solid #0a0a0a;
+    margin-top: 4px;
+    font-family: inherit;
+    background: #fff;
+  }
+  .hint { font-size: 0.7em; color: #555; margin-top: 3px; }
+
+  .checkline { display:flex; align-items:center; gap:8px; margin-top: 12px; }
+  .checkline label { margin: 0; font-weight: normal; }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 1em;
+    padding: 10px 16px;
+    border: 2px solid #0a0a0a;
+    background: #eee;
+    color: #0a0a0a;
+  }
+  .decoy-btn {
+    background: #0a0a0a;
+    color: #ffffff;
+    font-size: 1.25em;
+    font-weight: bold;
+    padding: 14px 28px;
+    display: block;
+    margin: 14px auto 6px;
+    border: 2px solid #0a0a0a;
+    box-shadow: 4px 4px 0 #aaa;
+  }
+  .real-btn {
+    display: block;
+    margin: 4px auto 0;
+    font-size: 0.72em;
+    color: #555;
+    background: none;
+    border: 1px dashed #bbb;
+    padding: 5px 8px;
+  }
+
+  /* --- scroll gauntlet --- */
+  .scrollbox {
+    height: 220px;
+    overflow-y: scroll;
+    border: 3px solid #0a0a0a;
+    background: #ffffff;
+    padding: 12px;
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+  .progress-wrap {
+    background: #eee;
+    border: 2px solid #0a0a0a;
+    height: 16px;
+    margin-top: 8px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: repeating-linear-gradient(45deg, #0a0a0a, #0a0a0a 10px, #555 10px, #555 20px);
+    width: 0%;
+  }
+  .progress-label { font-size: 0.78em; text-align:center; margin-top: 3px; color: #0a0a0a; }
+
+  .continue-sentence {
+    margin-top: 12px;
+    padding: 10px;
+    background: #f2f2f2;
+    border-left: 4px solid #0a0a0a;
+    font-size: 0.9em;
+  }
+  .hidden-continue {
+    color: #0a0a0a;
+    text-decoration: underline dotted;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .hidden-continue:hover { color: #555; }
+
+  .disabled-note {
+    text-align: center;
+    color: #333;
+    font-size: 0.82em;
+    margin-top: 8px;
+  }
+
+  .agree-row { display:flex; gap: 12px; margin-top: 14px; align-items:flex-start; }
+  .disagree-huge {
+    flex: 3;
+    background: #0a0a0a;
+    color: #ffffff;
+    font-size: 1.4em;
+    font-weight: bold;
+    padding: 18px;
+    border: 2px solid #0a0a0a;
+  }
+  .agree-small {
+    flex: 1;
+    background: #eee;
+    color: #333;
+    font-size: 0.72em;
+    padding: 5px;
+    align-self: flex-end;
+  }
+
+  .slider-wrap { margin-top: 14px; text-align:center; }
+  input[type=range] { width: 100%; }
+
+  textarea {
+    width: 100%;
+    height: 110px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 1em;
+    border: 2px solid #0a0a0a;
+    margin-top: 8px;
+    background: #fff;
+  }
+  #dodgeBtn {
+    position: relative;
+    background: #0a0a0a;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.05em;
+    padding: 12px 22px;
+    border: 2px solid #0a0a0a;
+    margin: 16px auto 0;
+    display: block;
+  }
+  .dodge-note { text-align:center; font-size: 0.78em; color:#555; margin-top: 5px; }
+
+  .thankyou-box { text-align:center; }
+  .stamp {
+    display:inline-block;
+    border: 4px solid #0a0a0a;
+    color: #0a0a0a;
+    font-size: 1.4em;
+    font-weight: bold;
+    padding: 10px 22px;
+    transform: rotate(-4deg);
+    margin: 12px 0;
+  }
+  .footer-tag { text-align:center; font-size: 0.68em; color:#777; margin-top: 18px; }
+
+  .level-tag {
+    display: inline-block;
+    font-size: 0.65em;
+    letter-spacing: 1.5px;
+    color: #777;
+    border: 1px solid #ccc;
+    padding: 2px 8px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .hscrollbox {
+    height: 130px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    border: 3px solid #0a0a0a;
+    background: #ffffff;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  .hscrollbox .hseg {
+    display: inline-block;
+    width: 230px;
+    white-space: normal;
+    vertical-align: top;
+    padding: 0 12px;
+    border-right: 1px dashed #ccc;
+    line-height: 1.45;
+    font-size: 0.92em;
+  }
+
+  .puzzle-word {
+    text-align: center;
+    font-size: 1.6em;
+    letter-spacing: 5px;
+    font-weight: bold;
+    margin: 14px 0;
+  }
+
+  .gauntlet-msg {
+    background: #f2f2f2;
+    border: 1px solid #0a0a0a;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 0.92em;
+    text-align: center;
+  }
+
+  .quiz-q { margin-top: 16px; }
+  .quiz-q p.qtext { font-weight: bold; margin-bottom: 6px; }
+  .quiz-q label { font-weight: normal; display: block; margin: 4px 0; }
+
+  /* --- panic room --- */
+  .panic-row { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+  .panic-btn-danger {
+    flex: 1;
+    min-width: 150px;
+    background: #0a0a0a;
+    color: #ffffff;
+    border: 2px solid #0a0a0a;
+    padding: 16px 14px;
+    font-weight: bold;
+    font-size: 0.95em;
+  }
+  .panic-btn-joke {
+    flex: 1;
+    min-width: 150px;
+    background: #eeeeee;
+    color: #0a0a0a;
+    border: 2px solid #0a0a0a;
+    padding: 16px 14px;
+    font-weight: bold;
+    font-size: 0.95em;
+  }
+
+  /* --- crash sequence --- */
+  .crash-layer { position: fixed; inset: 0; z-index: 900; pointer-events: none; }
+  .fake-window {
+    position: fixed;
+    background: #ffffff;
+    border: 2px solid #0a0a0a;
+    box-shadow: 4px 4px 0 #0a0a0a;
+    z-index: 901;
+    opacity: 0;
+    animation: fadeInWin 0.2s ease forwards;
+  }
+  .fake-window .fw-bar { background: #0a0a0a; color: #ffffff; font-size: 0.72em; padding: 4px 8px; font-weight: bold; }
+  .fake-window .fw-body { padding: 8px; font-size: 0.72em; line-height: 1.4; }
+  @keyframes fadeInWin {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .crash-final {
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    color: #ffffff;
+    z-index: 950;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px;
+  }
+  .crash-final h2 { color: #ffffff; border: none; font-size: 1.5em; }
+  .crash-final p { max-width: 480px; font-size: 0.95em; }
+  .crash-final button {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #ffffff;
+    padding: 14px 24px;
+    font-weight: bold;
+    margin-top: 16px;
+    font-size: 1em;
+  }
+
+  /* --- joke error --- */
+  .joke-error-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.82);
+    z-index: 920;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .joke-error-box {
+    width: 280px;
+    background: #ffffff;
+    border: 3px solid #0a0a0a;
+    box-shadow: 6px 6px 0 #0a0a0a;
+    padding: 16px;
+  }
+
+  /* --- chaotic navigation level --- */
+  .chaos-box {
+    position: relative;
+    height: 240px;
+    border: 3px solid #0a0a0a;
+    background: #ffffff;
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .chaos-btn {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 10px 14px;
+    font-weight: bold;
+    font-size: 0.85em;
+    border: 2px solid #0a0a0a;
+    background: #eeeeee;
+    color: #0a0a0a;
+    transition: left 0.45s ease, top 0.45s ease;
+  }
+  .chaos-real { background: #0a0a0a; color: #ffffff; }
+
+  /* --- popups --- */
+  .popup-box {
+    position: fixed;
+    width: 260px;
+    background: #ffffff;
+    border: 3px solid #0a0a0a;
+    box-shadow: 5px 5px 0 #0a0a0a;
+    padding: 14px;
+    z-index: 500;
+    font-size: 0.88em;
+  }
+  .popup-titlebar {
+    background: #0a0a0a;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 5px 8px;
+    margin: -14px -14px 10px;
+    font-size: 0.92em;
+  }
+  .popup-body { line-height: 1.45; color: #0a0a0a; }
+  .popup-x {
+    position: absolute;
+    top: 7px;
+    right: 9px;
+    background: #ffffff;
+    color: #0a0a0a;
+    border: 2px solid #0a0a0a;
+    width: 20px;
+    height: 20px;
+    line-height: 14px;
+    text-align: center;
+    padding: 0;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .popup-close-word {
+    color: #0a0a0a;
+    text-decoration: underline dotted;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .popup-btn-row { margin-top: 10px; display: flex; gap: 8px; }
+  .popup-btn-row button { font-size: 0.8em; padding: 5px 9px; }
+  .popup-decoy-close { background: #eee; color: #333; }
+  .popup-real-close { background: #ffffff; color: #555; border: 1px dashed #bbb; font-size: 0.75em; }
+
+  /* --- desktop only: use the extra space instead of floating a tiny card in it --- */
+  @media (min-width: 641px) {
+    .page { padding: 48px 40px 90px; }
+    .box { max-width: 820px; margin: 20px auto; padding: 44px 52px; box-shadow: 10px 10px 0 #0a0a0a; }
+    h1 { font-size: 2.5em; margin-bottom: 10px; }
+    h2 { font-size: 1.6em; padding-bottom: 10px; margin-bottom: 16px; }
+    .credentials { padding: 20px; margin-bottom: 22px; font-size: 1.15em; }
+    label { margin-top: 18px; font-size: 1.05em; }
+    input[type=text], input[type=password] { padding: 14px; margin-top: 6px; font-size: 1.05em; }
+    .hint { margin-top: 5px; font-size: 0.8em; }
+    .checkline { margin-top: 20px; gap: 10px; font-size: 1.05em; }
+    button { padding: 13px 22px; font-size: 1.05em; }
+    .decoy-btn { padding: 20px 40px; font-size: 1.5em; margin: 24px auto 10px; box-shadow: 6px 6px 0 #aaa; }
+    .real-btn { margin-top: 6px; padding: 7px 12px; font-size: 0.8em; }
+    .scrollbox { height: 420px; padding: 24px; margin-top: 16px; line-height: 1.85; font-size: 1.05em; }
+    .progress-wrap { height: 22px; margin-top: 12px; }
+    .progress-label { margin-top: 6px; font-size: 0.9em; }
+    .continue-sentence { margin-top: 18px; padding: 18px; font-size: 1.05em; }
+    .disabled-note { margin-top: 12px; font-size: 0.92em; }
+    .agree-row { gap: 18px; margin-top: 20px; }
+    .disagree-huge { padding: 30px; font-size: 1.8em; }
+    .agree-small { padding: 10px; font-size: 0.85em; }
+    .slider-wrap { margin-top: 20px; }
+    .slider-wrap label { font-size: 1.05em; }
+    textarea { height: 260px; padding: 16px; margin-top: 10px; font-size: 1.05em; }
+    #dodgeBtn { padding: 18px 32px; font-size: 1.3em; margin-top: 22px; }
+    .dodge-note { margin-top: 8px; font-size: 0.9em; }
+    .stamp { padding: 16px 34px; font-size: 2em; margin: 20px 0; }
+    .footer-tag { margin-top: 24px; font-size: 0.8em; }
+    .level-tag { font-size: 0.75em; padding: 4px 12px; margin-bottom: 12px; }
+    .hscrollbox { height: 220px; padding: 20px; margin-top: 16px; }
+    .hscrollbox .hseg { width: 340px; font-size: 1.05em; padding: 0 20px; }
+    .puzzle-word { font-size: 2.4em; letter-spacing: 8px; margin: 22px 0; }
+    .gauntlet-msg { padding: 18px; font-size: 1.05em; margin-top: 16px; }
+    .quiz-q { margin-top: 22px; }
+    .quiz-q .qtext { font-size: 1.05em; }
+    .quiz-q label { font-size: 1em; margin: 7px 0; }
+    .panic-btn-danger, .panic-btn-joke { padding: 22px 20px; font-size: 1.1em; }
+    .chaos-box { height: 340px; margin-top: 18px; }
+    .chaos-btn { padding: 14px 20px; font-size: 1em; }
+    .crash-final h2 { font-size: 2.1em; }
+    .crash-final p { font-size: 1.1em; }
+    .fake-window { width: 260px !important; }
+    .fake-window .fw-bar, .fake-window .fw-body { font-size: 0.85em; }
+    .joke-error-box { width: 420px; padding: 26px; }
+
+    /* pop-ups get bigger on desktop, not smaller — they're the nuisance, not a footnote */
+    .popup-box { width: 55vw; max-width: 760px; min-width: 440px; padding: 36px; font-size: 1.3em; box-shadow: 12px 12px 0 #0a0a0a; }
+    .popup-titlebar { margin: -36px -36px 22px; padding: 16px 22px; font-size: 1.25em; }
+    .popup-x { width: 32px; height: 32px; line-height: 24px; font-size: 1.2em; top: 12px; right: 14px; }
+    .popup-btn-row { margin-top: 18px; gap: 14px; }
+    .popup-btn-row button { font-size: 1em; padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- PAGE 1: LOGIN -->
+  <div class="page active" id="page-login">
+    <div class="box">
+      <h1>Freaky Form™</h1>
+      <p style="text-align:center; font-size:0.85em; color:#333; margin-top:-4px;">
+        A short authentication process, an even shorter series of legal agreements,
+        and a brief request for your feedback. That is the whole website. Everything
+        else you experience along the way is, unfortunately, load-bearing.
+      </p>
+      <div class="credentials">
+        Your login credentials for today are:<br>
+        Username: <b>GlitchGremlin77</b> &nbsp;|&nbsp; Password: <b>PineconeRebel#9</b><br>
+        <span style="font-size:0.75em;color:#333;">(please read the field labels very, very carefully)</span>
+      </div>
+
+      <label for="fieldA">Password</label>
+      <input type="text" id="fieldA" autocomplete="off">
+      <div class="hint">this box wants the thing that is NOT called "Password" above</div>
+
+      <label for="fieldB">Username</label>
+      <input type="text" id="fieldB" autocomplete="off">
+      <div class="hint">this box wants the thing that is NOT called "Username" above</div>
+
+      <div class="checkline">
+        <input type="checkbox" id="robotCheck" checked>
+        <label for="robotCheck">Uncheck this box to confirm you are NOT a robot</label>
+      </div>
+
+      <button class="decoy-btn" onclick="decoyLogin()">LOG IN</button>
+      <button class="real-btn" onclick="tryLogin()">do not press this to log in</button>
+
+      <div class="disabled-note" id="loginMsg"></div>
+    </div>
+  </div>
+
+  <!-- HUMAN VERIFICATION -->
+  <div class="page" id="page-verify">
+    <div class="box">
+      <h2>Human Verification</h2>
+      <p>Before continuing, please prove you are human by answering the following
+      question correctly.</p>
+      <div class="quiz-q">
+        <p class="qtext">If you had to answer this question at random, what is the
+        probability that you will select the correct answer?</p>
+        <label><input type="radio" name="paradox" value="A"> A. 25%</label>
+        <label><input type="radio" name="paradox" value="B"> B. 50%</label>
+        <label><input type="radio" name="paradox" value="C"> C. 0%</label>
+        <label><input type="radio" name="paradox" value="D"> D. 25%</label>
+      </div>
+      <button onclick="checkParadox()" style="display:block; margin: 14px auto 0;">Submit Answer</button>
+      <div class="disabled-note" id="paradoxMsg"></div>
+      <div style="text-align:center; margin-top:14px;">
+        <button class="real-btn" onclick="showParadoxHint()">Need a hint?</button>
+      </div>
+      <div class="gauntlet-msg" id="paradoxHint" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: LEVEL 1 -->
+  <div class="page" id="page-p1">
+    <div class="box">
+      <h2>Terms of Mild Inconvenience</h2>
+      <div class="scrollbox" id="scroll1"></div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar1"></div></div>
+      <div class="progress-label" id="label1">Scrolled: 0%</div>
+      <div class="continue-sentence">
+        By reading this far you have not agreed to anything yet. Most people at this
+        point try clicking the large button below, which, legally speaking, does
+        nothing whatsoever. If you would instead like to actually
+        <span class="hidden-continue" id="go1" onclick="unlock1()">continue</span>
+        reading the rest of our unrelated documentation about goose husbandry, that
+        option is buried in this sentence somewhere and is, incidentally, also how
+        you proceed to the next page.
+      </div>
+      <button class="decoy-btn" onclick="alert('This button is purely decorative. We are sorry, or possibly not.')">CONTINUE</button>
+      <div class="disabled-note" id="p1msg">keep scrolling the box above to unlock the real way forward</div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: LEVEL 2 -->
+  <div class="page" id="page-p2">
+    <div class="box">
+      <h2>Data Betrayal Policy</h2>
+      <div class="scrollbox" id="scroll2"></div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar2"></div></div>
+      <div class="progress-label" id="label2">Scrolled: 0%</div>
+      <div class="agree-row">
+        <button class="disagree-huge" onclick="disagreeClick()">I DISAGREE</button>
+        <button class="agree-small" id="agreeBtn" disabled onclick="goto('page-p3')">i agree</button>
+      </div>
+      <div class="disabled-note" id="p2msg">finish scrolling to enable the small gray button on the right</div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: LEVEL 3 -->
+  <div class="page" id="page-p3">
+    <div class="box">
+      <h2>Cookie Surrender Agreement</h2>
+      <div class="scrollbox" id="scroll3"></div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar3"></div></div>
+      <div class="progress-label" id="label3">Scrolled: 0%</div>
+      <div class="slider-wrap">
+        <label for="agreeSlider">Drag fully to the right to surrender your cookies</label>
+        <input type="range" id="agreeSlider" min="0" max="100" value="0" step="1" disabled oninput="sliderMove(this.value)">
+        <div class="disabled-note" id="sliderMsg">scroll box above first</div>
+      </div>
+      <button class="decoy-btn" id="p3continue" disabled onclick="advanceToP4()" style="opacity:0.4;">CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- PAGE 5: LEVEL 4 -->
+  <div class="page" id="page-p4">
+    <div class="box">
+      <h2>Terms Addendum (Horizontal Edition)</h2>
+      <p style="font-size:0.85em; color:#333;">
+        This addendum is, for reasons no one has ever fully explained, formatted
+        sideways. Scroll the box below from left to right to read it.
+      </p>
+      <div class="hscrollbox" id="hscroll4"></div>
+      <div class="progress-wrap"><div class="progress-bar" id="bar4"></div></div>
+      <div class="progress-label" id="label4">Scrolled: 0%</div>
+      <button class="decoy-btn" onclick="alert('This arrow is decorative. The real one is smaller and to the right.')">NEXT ▶</button>
+      <button class="real-btn" id="go4" disabled onclick="advanceToP5()">→ proceed</button>
+      <div class="disabled-note" id="p4msg">keep scrolling sideways to unlock the real way forward</div>
+    </div>
+  </div>
+
+  <!-- PAGE 6: LEVEL 5 -->
+  <div class="page" id="page-p5">
+    <div class="box">
+      <h2>Identity Verification</h2>
+      <p>To confirm you are a person and not a particularly determined script, unscramble
+      the word below and type the answer.</p>
+      <div class="puzzle-word">TAICNEPE</div>
+      <label for="puzzleInput">Your answer</label>
+      <input type="text" id="puzzleInput" autocomplete="off">
+      <button onclick="checkPuzzle()" style="display:block; margin: 14px auto 0;">Verify</button>
+      <div class="disabled-note" id="puzzleMsg"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 7: LEVEL 6 -->
+  <div class="page" id="page-p6">
+    <div class="box">
+      <h2>Preference Center</h2>
+      <p style="font-size:0.85em; color:#333;">
+        Set each toggle below into its correct position. There is no key. There is
+        only feedback.
+      </p>
+      <div class="checkline"><input type="checkbox" id="tg0"><label for="tg0">Do NOT disable non-essential tracking</label></div>
+      <div class="checkline"><input type="checkbox" id="tg1"><label for="tg1">Decline to opt out of marketing</label></div>
+      <div class="checkline"><input type="checkbox" id="tg2"><label for="tg2">Withhold consent from being withheld</label></div>
+      <div class="checkline"><input type="checkbox" id="tg3"><label for="tg3">Unsubscribe from staying subscribed</label></div>
+      <div class="checkline"><input type="checkbox" id="tg4"><label for="tg4">Disagree that you disagree</label></div>
+      <div class="disabled-note" id="toggleMsg">0 of 5 correctly set</div>
+      <button class="decoy-btn" id="p6continue" disabled onclick="advanceToP7()" style="opacity:0.4;">CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- PAGE 8: LEVEL 7 -->
+  <div class="page" id="page-p7">
+    <div class="box">
+      <h2>Newsletter Gauntlet</h2>
+      <p>Before continuing, please indicate your newsletter preference.</p>
+      <button class="decoy-btn" onclick="alert('Subscription confirmed. There was no way to undo this from that button anyway.')">YES, SPAM ME FOREVER</button>
+      <div class="gauntlet-msg" id="gauntletMsg">Or, if you must:</div>
+      <button class="real-btn" id="gauntletBtn" onclick="gauntletClick()" style="margin: 8px auto 0; display:block;">no thanks</button>
+      <button class="decoy-btn" id="p7continue" style="display:none; margin-top:16px;" onclick="advanceToP8()">CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- PAGE 9: LEVEL 8 -->
+  <div class="page" id="page-p8">
+    <div class="box">
+      <h2>Comprehension Check</h2>
+      <p style="font-size:0.85em; color:#333;">A brief quiz to confirm you were paying at least partial attention.</p>
+
+      <div class="quiz-q">
+        <p class="qtext">1. Per the Terms of Mild Inconvenience, "reasonable effort" includes at least one what?</p>
+        <label><input type="radio" name="q1" value="nap"> Nap</label>
+        <label><input type="radio" name="q1" value="marathon"> Marathon</label>
+        <label><input type="radio" name="q1" value="deposition"> Legal deposition</label>
+        <label><input type="radio" name="q1" value="sacrifice"> Sacrifice</label>
+      </div>
+
+      <div class="quiz-q">
+        <p class="qtext">2. Per the Data Betrayal Policy, your data may be shared with our partners, our rivals, and possibly a what?</p>
+        <label><input type="radio" name="q2" value="raccoon"> Raccoon</label>
+        <label><input type="radio" name="q2" value="dolphin"> Dolphin</label>
+        <label><input type="radio" name="q2" value="committee"> Committee</label>
+        <label><input type="radio" name="q2" value="nobody"> Nobody</label>
+      </div>
+
+      <button onclick="checkQuiz()" style="display:block; margin: 16px auto 0;">Submit Answers</button>
+      <div class="disabled-note" id="quizMsg"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 10: LEVEL 9 (PANIC ROOM) -->
+  <div class="page" id="page-p9">
+    <div class="box">
+      <h2>Do Not Touch (Please Touch)</h2>
+      <p>This room contains two buttons. We recommend touching neither. Statistically,
+      you are about to touch at least one.</p>
+      <div class="panic-row">
+        <button class="panic-btn-danger" onclick="triggerCrash()">PURGE SESSION (do not click)</button>
+        <button class="panic-btn-joke" onclick="showJokeError()">Simulate Application Error</button>
+      </div>
+      <div class="disabled-note" style="margin-top:18px;">
+        If you would prefer to leave this room without touching anything,
+        <span class="hidden-continue" onclick="advanceToP10()">you may do that instead</span>.
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 11: LEVEL 10 (CHAOTIC NAVIGATION) -->
+  <div class="page" id="page-p10">
+    <div class="box">
+      <h2>Chaotic Navigation</h2>
+      <p>Somewhere in the box below is the button that continues. It does not want
+      to be found, and it will not sit still while you look for it.</p>
+      <div class="chaos-box" id="chaosBox">
+        <button class="chaos-btn" onclick="chaosDecoyClick('Close, but no.')">EXIT?</button>
+        <button class="chaos-btn" onclick="chaosDecoyClick('This one was never going to work.')">ALSO EXIT</button>
+        <button class="chaos-btn" onclick="chaosDecoyClick('Definitely not this one.')">DEFINITELY NOT EXIT</button>
+        <button class="chaos-btn chaos-real" onclick="chaosRealClick()">EXIT</button>
+      </div>
+      <div class="disabled-note">catch the correct button to continue</div>
+    </div>
+  </div>
+
+  <!-- PAGE 12: LEVEL 11 (FEEDBACK) -->
+  <div class="page" id="page-feedback">
+    <div class="box">
+      <h2>One Last Thing: Feedback</h2>
+      <p>Please write a short, honest review of your Freaky Form™ experience so far.</p>
+      <textarea id="feedbackText" placeholder="Type your feedback here..."></textarea>
+
+      <button class="decoy-btn" onclick="fakeSubmit()">SUBMIT (this one is fake)</button>
+      <button id="dodgeBtn" onclick="realSubmit()">Submit for real</button>
+      <div class="dodge-note" id="dodgeNote">good luck</div>
+    </div>
+  </div>
+
+  <!-- PAGE 11: THANK YOU -->
+  <div class="page" id="page-thankyou">
+    <div class="box thankyou-box">
+      <h1>You Escaped</h1>
+      <div class="stamp">SURVIVOR</div>
+      <p>Congratulations. You have successfully navigated Freaky Form™ from start to
+      finish. This achievement will not be recorded anywhere, but you will remember
+      it forever.</p>
+
+      <div style="text-align:left; background:#f2f2f2; border:1px solid #0a0a0a; padding:10px; margin:14px 0; font-size:0.85em;">
+        <b>Your Freaky Form™ Receipt</b>
+        <div style="display:flex; justify-content:space-between; margin-top:6px;"><span>Levels completed</span><span>11 of 11</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Documents scrolled through</span><span>4</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Puzzles solved</span><span>1</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Toggles correctly set</span><span>5</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Newsletter offers declined</span><span>3</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Session purges triggered</span><span id="receiptCrashes">0</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Fake errors survived</span><span id="receiptJokes">0</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Buttons that lied to you</span><span id="receiptDecoys">11</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Pop-ups endured</span><span id="receiptPopups">0</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Dignity remaining</span><span>low</span></div>
+        <div style="display:flex; justify-content:space-between;"><span>Refund available</span><span>no</span></div>
+      </div>
+
+      <p><b>Your submitted feedback:</b></p>
+      <p id="finalFeedback" style="font-style:italic; border:2px dashed #0a0a0a; padding:10px;"></p>
+
+      <p style="font-size:0.85em; color:#333;">
+        Nothing further is required of you. There is no next page, no confirmation
+        email, and no version of this site that goes anywhere else from here. You may
+        close this tab, or leave it open as a reminder.
+      </p>
+
+      <div class="footer-tag">Freaky Form™ — technically a website</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="popupLayer"></div>
+
+<script>
+/* ---------- navigation ---------- */
+function goto(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ---------- LOGIN ---------- */
+const USERNAME = "GlitchGremlin77";
+const PASSWORD = "PineconeRebel#9";
+
+function decoyLogin(){
+  document.getElementById('loginMsg').textContent = "That is not the login button. Please read the small text underneath it.";
+}
+
+function tryLogin(){
+  const a = document.getElementById('fieldA').value.trim(); // should hold USERNAME
+  const b = document.getElementById('fieldB').value.trim(); // should hold PASSWORD
+  const robot = document.getElementById('robotCheck').checked;
+  const msg = document.getElementById('loginMsg');
+
+  if (robot){
+    msg.textContent = "You are still checked as a robot. Uncheck the box.";
+    return;
+  }
+  if (a === USERNAME && b === PASSWORD){
+    msg.textContent = "";
+    goto('page-verify');
+  } else {
+    msg.textContent = "Incorrect. Remember: the labels are lying to you.";
+  }
+}
+
+/* ---------- HUMAN VERIFICATION: impossible paradox ---------- */
+function checkParadox(){
+  const sel = document.querySelector('input[name=paradox]:checked');
+  const msg = document.getElementById('paradoxMsg');
+  if (!sel){
+    msg.textContent = "Please select an answer.";
+    return;
+  }
+  msg.textContent = "Incorrect. Try again, or ask for a hint below.";
+}
+function showParadoxHint(){
+  const hint = document.getElementById('paradoxHint');
+  hint.style.display = 'block';
+  hint.innerHTML = "Don't worry, that's a paradox. You can't exactly answer those. " +
+    '<span class="hidden-continue" onclick="advanceFromVerify()">continue anyway</span>.';
+}
+function advanceFromVerify(){
+  goto('page-p1');
+  initScrollGauntlet('scroll1', 'bar1', 'label1', unlock1Ready);
+}
+
+/* ---------- generic scroll gauntlet ---------- */
+const fillerSets = {
+  scroll1: [
+    "By using this service you agree that the moon is, at minimum, aware of your presence.",
+    "Section 4(b) clarifies that 'reasonable effort' includes at least one nap.",
+    "Nothing in this document constitutes legal advice, culinary advice, or advice of any kind.",
+    "You waive the right to be surprised by anything that happens after this point.",
+    "This clause intentionally left slightly confusing.",
+    "In the event of a dispute, both parties agree to settle it via interpretive dance.",
+    "Continued scrolling constitutes tacit approval of our questionable font choices.",
+    "We reserve the right to change these terms whenever we feel like it, which is often.",
+    "This paragraph is here purely to take up space, and it is very good at its job.",
+    "The undersigned, being of sound mind and questionable judgment, agrees to keep scrolling.",
+    "Inconvenience, for the purposes of this document, is considered a feature.",
+    "If you have made it this far, you are already more patient than our legal team expected."
+  ],
+  scroll2: [
+    "We may collect, store, and lightly judge your browsing habits.",
+    "Your data may be shared with our partners, our rivals, and possibly a raccoon.",
+    "'Anonymized' in this document means we removed your name and kept everything else.",
+    "We track how long you hesitate before clicking things. Yours was above average.",
+    "This policy applies retroactively to data we have not collected yet.",
+    "In the unlikely event of a breach, you will find out from a stranger, not from us.",
+    "Cookies here refer to both the tracking kind and the kind we are not sending you.",
+    "We may sell your information, though 'sell' is doing a lot of work in that sentence.",
+    "Opting out of this policy is possible in theory and undocumented in practice.",
+    "Your betrayal, much like ours, is mutual and ongoing.",
+    "This section was reviewed by a lawyer who has never met you and never will.",
+    "Thank you for your continued lack of alternatives."
+  ],
+  scroll3: [
+    "A cookie, once surrendered, cannot be un-surrendered.",
+    "We use cookies to remember you, mostly so we can bother you again later.",
+    "Third-party cookies here are baked by third parties we decline to name.",
+    "Declining cookies is possible, but the button for that does not exist on this page.",
+    "Some cookies are essential. The rest are just along for the ride.",
+    "By dragging the slider below, you agree to a level of tracking you cannot see.",
+    "We do not eat the cookies ourselves. We just collect them, indefinitely.",
+    "This agreement renews automatically every time you close and reopen this tab.",
+    "Cookie preferences, once submitted, are filed and never looked at again.",
+    "You may request your cookies back. We will not respond to that request.",
+    "This is the last of the three documents. It was, on reflection, the least necessary.",
+    "Almost there. The slider is still waiting for you below."
+  ],
+  scroll4: [
+    "This addendum exists because someone, at some point, insisted on it in writing.",
+    "Reading sideways does not make this document any less binding.",
+    "We have chosen this format specifically because most people give up early. Please don't.",
+    "If your mouse wheel isn't scrolling this, try your trackpad, or sheer willpower.",
+    "Nothing in this addendum contradicts the other documents. It just repeats them, sideways.",
+    "Horizontal reading has been linked to mild confusion and, in rare cases, clarity.",
+    "This is roughly the halfway point of the addendum. You are doing fine.",
+    "We could have put this in a normal paragraph. We chose not to.",
+    "The addendum will end shortly. It was never really about the content.",
+    "You have reached the end. There is a small arrow waiting for you below, somewhere."
+  ]
+};
+
+function fillerParagraphs(boxId, n){
+  const topics = fillerSets[boxId] || fillerSets.scroll1;
+  let out = "";
+  for (let i=0; i<n; i++){
+    out += "<p>" + (i+1) + ". " + topics[i % topics.length] + "</p>";
+  }
+  return out;
+}
+
+function initScrollGauntlet(boxId, barId, labelId, onDone){
+  const box = document.getElementById(boxId);
+  box.innerHTML = fillerParagraphs(boxId, 26);
+  box.scrollTop = 0;
+
+  const bar = document.getElementById(barId);
+  const label = document.getElementById(labelId);
+  let done = false;
+
+  // slow the scroll down artificially
+  box.addEventListener('wheel', function(e){
+    e.preventDefault();
+    box.scrollTop += e.deltaY * 0.12;
+    updateProgress();
+  }, { passive:false });
+
+  box.addEventListener('touchmove', function(){ updateProgress(); });
+  box.addEventListener('scroll', updateProgress);
+
+  function updateProgress(){
+    const max = box.scrollHeight - box.clientHeight;
+    const pct = max <= 0 ? 100 : Math.min(100, Math.round((box.scrollTop / max) * 100));
+    bar.style.width = pct + "%";
+    label.textContent = "Scrolled: " + pct + "%";
+    if (pct >= 99 && !done){
+      done = true;
+      if (onDone) onDone();
+    }
+  }
+  updateProgress();
+}
+
+/* ---------- PAGE 2: hidden-word continue ---------- */
+let p1Unlocked = false;
+function unlock1Ready(){
+  p1Unlocked = true;
+  document.getElementById('p1msg').textContent = "the word 'continue' inside the paragraph above is now clickable";
+}
+function unlock1(){
+  if (!p1Unlocked){
+    document.getElementById('p1msg').textContent = "not yet — finish scrolling the box first";
+    return;
+  }
+  goto('page-p2');
+  initScrollGauntlet('scroll2', 'bar2', 'label2', unlock2Ready);
+}
+
+/* ---------- PAGE 3: disagree decoy + tiny agree ---------- */
+let disagreeClicks = 0;
+function disagreeClick(){
+  disagreeClicks++;
+  if (disagreeClicks < 3){
+    alert("Noted. This button is decorative and changes nothing.");
+  } else {
+    alert("Okay, we hear you. It's still decorative though.");
+  }
+}
+function unlock2Ready(){
+  document.getElementById('agreeBtn').disabled = false;
+  document.getElementById('p2msg').textContent = "the small gray 'i agree' button is now enabled";
+}
+document.getElementById('agreeBtn').addEventListener('click', function(){
+  goto('page-p3');
+  initScrollGauntlet('scroll3', 'bar3', 'label3', unlock3Ready);
+});
+
+/* ---------- PAGE 4: slider ---------- */
+function unlock3Ready(){
+  document.getElementById('agreeSlider').disabled = false;
+  document.getElementById('sliderMsg').textContent = "drag the slider all the way to the right";
+}
+function sliderMove(val){
+  const btn = document.getElementById('p3continue');
+  const msg = document.getElementById('sliderMsg');
+  if (val >= 98){
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    msg.textContent = "fully surrendered. you may continue.";
+  } else {
+    msg.textContent = "keep dragging... (" + val + "%)";
+  }
+}
+function advanceToP4(){
+  goto('page-p4');
+  initHScroll();
+}
+
+/* ---------- LEVEL 4: horizontal scroll ---------- */
+function initHScroll(){
+  const box = document.getElementById('hscroll4');
+  box.innerHTML = fillerSets.scroll4.map(function(t){ return '<span class="hseg">' + t + '</span>'; }).join('');
+  box.scrollLeft = 0;
+
+  const bar = document.getElementById('bar4');
+  const label = document.getElementById('label4');
+  let done = false;
+
+  box.addEventListener('wheel', function(e){
+    e.preventDefault();
+    box.scrollLeft += (e.deltaY || e.deltaX) * 0.15;
+    updateProgress();
+  }, { passive:false });
+  box.addEventListener('scroll', updateProgress);
+
+  function updateProgress(){
+    const max = box.scrollWidth - box.clientWidth;
+    const pct = max <= 0 ? 100 : Math.min(100, Math.round((box.scrollLeft / max) * 100));
+    bar.style.width = pct + "%";
+    label.textContent = "Scrolled: " + pct + "%";
+    if (pct >= 99 && !done){
+      done = true;
+      document.getElementById('go4').disabled = false;
+      document.getElementById('p4msg').textContent = "the small '→ proceed' button below is now clickable";
+    }
+  }
+  updateProgress();
+}
+function advanceToP5(){
+  goto('page-p5');
+  document.getElementById('puzzleInput').value = '';
+  document.getElementById('puzzleMsg').textContent = '';
+}
+
+/* ---------- LEVEL 5: unscramble puzzle ---------- */
+let puzzleAttempts = 0;
+function checkPuzzle(){
+  const val = document.getElementById('puzzleInput').value.trim().toLowerCase();
+  const msg = document.getElementById('puzzleMsg');
+  if (val === 'patience'){
+    msg.textContent = '';
+    advanceToP6();
+  } else {
+    puzzleAttempts++;
+    if (puzzleAttempts === 1){
+      msg.textContent = "Not quite. Hint: it's a virtue you've been practicing this entire time.";
+    } else if (puzzleAttempts >= 2){
+      msg.textContent = "Hint: it starts with P and this website has been testing it since login.";
+    }
+  }
+}
+function advanceToP6(){
+  goto('page-p6');
+  ['tg0','tg1','tg2','tg3','tg4'].forEach(function(id){
+    document.getElementById(id).checked = false;
+  });
+  document.getElementById('toggleMsg').textContent = '0 of 5 correctly set';
+  document.getElementById('p6continue').disabled = true;
+  document.getElementById('p6continue').style.opacity = '0.4';
+}
+
+/* ---------- LEVEL 6: preference toggles ---------- */
+const toggleTarget = [true, false, true, false, true];
+function checkToggles(){
+  const ids = ['tg0','tg1','tg2','tg3','tg4'];
+  let correct = 0;
+  ids.forEach(function(id, i){
+    if (document.getElementById(id).checked === toggleTarget[i]) correct++;
+  });
+  document.getElementById('toggleMsg').textContent = correct + ' of 5 correctly set';
+  const btn = document.getElementById('p6continue');
+  if (correct === 5){
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+  }
+}
+['tg0','tg1','tg2','tg3','tg4'].forEach(function(id){
+  document.getElementById(id).addEventListener('change', checkToggles);
+});
+function advanceToP7(){
+  goto('page-p7');
+  gauntletStage = 0;
+  document.getElementById('gauntletMsg').textContent = 'Or, if you must:';
+  document.getElementById('gauntletBtn').textContent = 'no thanks';
+  document.getElementById('gauntletBtn').style.display = 'block';
+  document.getElementById('p7continue').style.display = 'none';
+}
+
+/* ---------- LEVEL 7: newsletter gauntlet ---------- */
+let gauntletStage = 0;
+function gauntletClick(){
+  gauntletStage++;
+  const msg = document.getElementById('gauntletMsg');
+  const btn = document.getElementById('gauntletBtn');
+  if (gauntletStage === 1){
+    msg.textContent = "Are you sure? We have genuinely mediocre content.";
+    btn.textContent = "still no";
+  } else if (gauntletStage === 2){
+    msg.textContent = "Truly sure? This is your last chance to reconsider.";
+    btn.textContent = "still, still no";
+  } else {
+    msg.textContent = "Fine. Noted, reluctantly.";
+    btn.style.display = 'none';
+    document.getElementById('p7continue').style.display = 'block';
+  }
+}
+function advanceToP8(){
+  goto('page-p8');
+  document.getElementById('quizMsg').textContent = '';
+}
+
+/* ---------- LEVEL 8: comprehension quiz ---------- */
+function checkQuiz(){
+  const q1 = document.querySelector('input[name=q1]:checked');
+  const q2 = document.querySelector('input[name=q2]:checked');
+  const msg = document.getElementById('quizMsg');
+  if (!q1 || !q2){
+    msg.textContent = "Please answer both questions.";
+    return;
+  }
+  if (q1.value === 'nap' && q2.value === 'raccoon'){
+    msg.textContent = '';
+    advanceToP9();
+  } else {
+    msg.textContent = "Not quite. One or more answers were incorrect — think back to the earlier documents.";
+  }
+}
+function advanceToP9(){
+  goto('page-p9');
+}
+
+/* ---------- LEVEL 9: panic room (real crash + joke error) ---------- */
+let crashCount = 0;
+let jokeErrorCount = 0;
+let crashInProgress = false;
+
+const crashTitles = ["Not Responding", "System Warning", "Memory Error", "Unexpected Fault", "Critical Alert", "Background Process Failed"];
+const crashBodies = [
+  "A required component has stopped responding.",
+  "This shouldn't have happened. It happened anyway.",
+  "Error code: FREAKY_0x7E. No further detail available.",
+  "A background task has failed silently, then loudly.",
+  "Something somewhere went wrong. We're not sure where.",
+  "This window will not close on its own."
+];
+
+function triggerCrash(){
+  if (crashInProgress) return;
+  crashInProgress = true;
+  crashCount++;
+
+  const layer = document.createElement('div');
+  layer.className = 'crash-layer';
+  layer.id = 'crashSpamLayer';
+  document.body.appendChild(layer);
+
+  let count = 0;
+  const maxWindows = 14;
+  const spamInterval = setInterval(function(){
+    count++;
+    const win = document.createElement('div');
+    win.className = 'fake-window';
+    const w = 170 + Math.random() * 70;
+    win.style.width = w + 'px';
+    const maxLeft = Math.max(0, window.innerWidth - w - 10);
+    const maxTop = Math.max(0, window.innerHeight - 90);
+    win.style.left = (Math.random() * maxLeft) + 'px';
+    win.style.top = (Math.random() * maxTop) + 'px';
+    const title = crashTitles[Math.floor(Math.random() * crashTitles.length)];
+    const body = crashBodies[Math.floor(Math.random() * crashBodies.length)];
+    win.innerHTML = '<div class="fw-bar">' + title + '</div><div class="fw-body">' + body + '</div>';
+    layer.appendChild(win);
+    if (count >= maxWindows){
+      clearInterval(spamInterval);
+      setTimeout(showCrashFinal, 500);
+    }
+  }, 90);
+}
+
+function showCrashFinal(){
+  const final = document.createElement('div');
+  final.className = 'crash-final';
+  final.id = 'crashFinal';
+  final.innerHTML = '<h2>FREAKY FORM has stopped responding</h2>' +
+    '<p>All progress has been lost. In fairness, the button was clearly labeled.</p>' +
+    '<button onclick="restartSite()">RESTART FREAKY FORM</button>';
+  document.body.appendChild(final);
+}
+
+function restartSite(){
+  const layer = document.getElementById('crashSpamLayer');
+  if (layer) layer.remove();
+  const final = document.getElementById('crashFinal');
+  if (final) final.remove();
+  const joke = document.getElementById('jokeErrorOverlay');
+  if (joke) joke.remove();
+  stopChaos();
+
+  crashInProgress = false;
+  puzzleAttempts = 0;
+  gauntletStage = 0;
+  disagreeClicks = 0;
+  dodges = 0;
+  jokeStage = 0;
+  popupIndex = 0;
+
+  document.getElementById('fieldA').value = '';
+  document.getElementById('fieldB').value = '';
+  document.getElementById('robotCheck').checked = true;
+  document.getElementById('loginMsg').textContent = '';
+  document.getElementById('feedbackText').value = '';
+  document.getElementById('paradoxMsg').textContent = '';
+  document.getElementById('paradoxHint').style.display = 'none';
+  document.querySelectorAll('input[name=paradox]').forEach(function(r){ r.checked = false; });
+
+  goto('page-login');
+}
+
+let jokeStage = 0;
+function showJokeError(){
+  jokeErrorCount++;
+  jokeStage = 0;
+  const overlay = document.createElement('div');
+  overlay.className = 'joke-error-overlay';
+  overlay.id = 'jokeErrorOverlay';
+  overlay.innerHTML =
+    '<div class="joke-error-box">' +
+      '<div class="popup-titlebar">Fatal Error 0x00FREAKY</div>' +
+      '<div class="popup-body" id="jokeErrorBody">This application has encountered a critical failure and must close.</div>' +
+      '<button id="jokeErrorBtn" onclick="jokeErrorNext()" style="margin-top:14px;">OK</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+}
+function jokeErrorNext(){
+  jokeStage++;
+  if (jokeStage === 1){
+    document.getElementById('jokeErrorBody').textContent = "Just kidding. Everything is fine.";
+    document.getElementById('jokeErrorBtn').textContent = 'Phew';
+  } else {
+    const overlay = document.getElementById('jokeErrorOverlay');
+    if (overlay) overlay.remove();
+    jokeStage = 0;
+  }
+}
+function advanceToP10(){
+  goto('page-p10');
+  startChaos();
+}
+
+/* ---------- LEVEL 10: chaotic navigation ---------- */
+let chaosIntervals = [];
+function startChaos(){
+  stopChaos();
+  const box = document.getElementById('chaosBox');
+  const btns = box.querySelectorAll('.chaos-btn');
+  btns.forEach(function(btn){
+    placeRandom(btn, box);
+    const id = setInterval(function(){ placeRandom(btn, box); }, 800 + Math.random() * 400);
+    chaosIntervals.push(id);
+  });
+}
+function stopChaos(){
+  chaosIntervals.forEach(function(id){ clearInterval(id); });
+  chaosIntervals = [];
+}
+function placeRandom(btn, box){
+  const bw = box.clientWidth, bh = box.clientHeight;
+  const btnW = btn.offsetWidth || 100, btnH = btn.offsetHeight || 40;
+  const maxLeft = Math.max(0, bw - btnW - 8);
+  const maxTop = Math.max(0, bh - btnH - 8);
+  btn.style.left = (4 + Math.random() * maxLeft) + 'px';
+  btn.style.top = (4 + Math.random() * maxTop) + 'px';
+}
+function chaosDecoyClick(msg){
+  alert(msg);
+}
+function chaosRealClick(){
+  stopChaos();
+  goto('page-feedback');
+}
+
+/* ---------- LEVEL 11: feedback + dodging button ---------- */
+let dodges = 0;
+const MAX_DODGES = 4;
+
+function fakeSubmit(){
+  alert("This button does not submit anything. Try the green one below.");
+}
+
+const dodgeBtn = document.getElementById('dodgeBtn');
+dodgeBtn.addEventListener('mouseenter', function(){
+  if (dodges < MAX_DODGES){
+    dodges++;
+    const dx = (Math.random() * 160 - 80);
+    const dy = (Math.random() * 30 - 15);
+    dodgeBtn.style.transform = "translate(" + dx + "px," + dy + "px)";
+    document.getElementById('dodgeNote').textContent = "it dodged you (" + dodges + "/" + MAX_DODGES + ") — it'll stop moving soon";
+  } else {
+    dodgeBtn.style.transform = "translate(0,0)";
+    document.getElementById('dodgeNote').textContent = "it's tired now. go ahead and click it.";
+  }
+});
+
+function realSubmit(){
+  const text = document.getElementById('feedbackText').value.trim();
+  if (!text){
+    alert("You have to actually write something first.");
+    return;
+  }
+  document.getElementById('finalFeedback').textContent = '"' + text + '"';
+  document.getElementById('receiptPopups').textContent = popupIndex;
+  document.getElementById('receiptCrashes').textContent = crashCount;
+  document.getElementById('receiptJokes').textContent = jokeErrorCount;
+  goto('page-thankyou');
+}
+
+/* ---------- irritating popups ---------- */
+const popupContent = [
+  {
+    title: "Customer Satisfaction Check",
+    body: "On a scale of one to fine, how is your experience so far? Your answer will not be recorded, read, or acted upon in any way. If you'd like to dismiss this, the word",
+    closeWord: "fine",
+    tail: "somewhere in this sentence is your way out.",
+    type: "hiddenWord"
+  },
+  {
+    title: "Cookie Update Notice",
+    body: "We've updated our cookie policy again. We do this often. It rarely means anything.",
+    type: "decoyX"
+  },
+  {
+    title: "System Notification",
+    body: "A system event has occurred. No further detail will be provided, now or ever.",
+    type: "dodge"
+  },
+  {
+    title: "Survey Invitation",
+    body: "Would you like to participate in a 45-minute survey about this pop-up specifically?",
+    type: "mislabeled"
+  },
+  {
+    title: "Loyalty Program Alert",
+    body: "You have been auto-enrolled in a loyalty program with no known benefits.",
+    type: "countdown"
+  },
+  {
+    title: "Terms Update",
+    body: "Our terms changed slightly while you were reading our other terms. To acknowledge and",
+    closeWord: "proceed",
+    tail: "you may click the underlined word in this sentence.",
+    type: "hiddenWord"
+  },
+  {
+    title: "Browser Compatibility Warning",
+    body: "This site may not display correctly in your browser, your other browser, or any browser.",
+    type: "decoyX"
+  },
+  {
+    title: "Newsletter Signup",
+    body: "Subscribe to our newsletter about newsletters. Unsubscribing is a separate, longer process.",
+    type: "dodge"
+  },
+  {
+    title: "Software Update Available",
+    body: "A completely unnecessary update is ready to install. It changes nothing except the version number.",
+    type: "decoyX"
+  },
+  {
+    title: "Survivor Bonus Round",
+    body: "Congratulations on making it this far. There is no bonus round. This popup was,",
+    closeWord: "unfortunately",
+    tail: "it. Click the underlined word to move on.",
+    type: "hiddenWord"
+  },
+  {
+    title: "Fast Pass Offer",
+    body: "Would you like to skip this part?",
+    type: "fakeSkip"
+  },
+  {
+    title: "Just Checking In",
+    body: "You still there?",
+    type: "checkin"
+  },
+  {
+    title: "Performance Notice",
+    body: "You're significantly slower than the average user. Please click to verify that you are actually a human.",
+    type: "slowUser"
+  }
+];
+let popupIndex = 0;
+let popupOpen = false;
+
+function spawnPopup(){
+  if (popupOpen) return;
+  popupOpen = true;
+
+  const data = popupContent[popupIndex % popupContent.length];
+  popupIndex++;
+
+  const isDesktop = window.innerWidth >= 641;
+  const estWidth = isDesktop ? Math.max(440, Math.min(760, window.innerWidth * 0.55)) : 260;
+  const estHeight = isDesktop ? 340 : 220;
+
+  const maxLeft = Math.max(10, window.innerWidth - estWidth - 10);
+  const maxTop = Math.max(50, window.innerHeight - estHeight - 20);
+  const left = 10 + Math.random() * Math.max(0, maxLeft - 10);
+  const top = 40 + Math.random() * Math.max(0, maxTop - 40);
+
+  const box = document.createElement('div');
+  box.className = 'popup-box';
+  box.style.left = left + 'px';
+  box.style.top = top + 'px';
+
+  let inner = '<div class="popup-titlebar">' + data.title + '</div>';
+  inner += '<div class="popup-body" id="pbody-' + popupIndex + '"></div>';
+  box.innerHTML = inner;
+  document.getElementById('popupLayer').appendChild(box);
+
+  const bodyEl = box.querySelector('.popup-body');
+
+  function closePopup(){
+    box.remove();
+    popupOpen = false;
+  }
+
+  if (data.type === 'hiddenWord'){
+    bodyEl.innerHTML = data.body + ' <span class="popup-close-word">' + data.closeWord + '</span> ' + data.tail;
+    bodyEl.querySelector('.popup-close-word').addEventListener('click', closePopup);
+
+  } else if (data.type === 'decoyX'){
+    bodyEl.textContent = data.body;
+    const xBtn = document.createElement('button');
+    xBtn.className = 'popup-x';
+    xBtn.textContent = 'X';
+    xBtn.onclick = function(){ xBtn.textContent = '?'; };
+    box.appendChild(xBtn);
+    const row = document.createElement('div');
+    row.className = 'popup-btn-row';
+    const real = document.createElement('button');
+    real.className = 'popup-real-close';
+    real.textContent = 'acknowledge and dismiss';
+    real.onclick = closePopup;
+    row.appendChild(real);
+    bodyEl.after(row);
+
+  } else if (data.type === 'dodge'){
+    bodyEl.textContent = data.body;
+    const row = document.createElement('div');
+    row.className = 'popup-btn-row';
+    const btn = document.createElement('button');
+    btn.className = 'popup-decoy-close';
+    btn.textContent = 'Close';
+    let dodges = 0;
+    btn.addEventListener('mouseenter', function(){
+      if (dodges < 3){
+        dodges++;
+        const dx = Math.random() * 60 - 30;
+        const dy = Math.random() * 20 - 10;
+        btn.style.position = 'relative';
+        btn.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      } else {
+        btn.onclick = closePopup;
+        btn.textContent = 'Close (really)';
+      }
+    });
+    row.appendChild(btn);
+    bodyEl.after(row);
+
+  } else if (data.type === 'mislabeled'){
+    bodyEl.textContent = data.body;
+    const row = document.createElement('div');
+    row.className = 'popup-btn-row';
+    const decoy = document.createElement('button');
+    decoy.className = 'popup-decoy-close';
+    decoy.textContent = 'Close';
+    decoy.onclick = function(){ decoy.textContent = 'Still open'; };
+    const real = document.createElement('button');
+    real.className = 'popup-real-close';
+    real.textContent = 'Do not close';
+    real.onclick = closePopup;
+    row.appendChild(decoy);
+    row.appendChild(real);
+    bodyEl.after(row);
+
+  } else if (data.type === 'countdown'){
+    bodyEl.textContent = data.body;
+    const row = document.createElement('div');
+    row.className = 'popup-btn-row';
+    const btn = document.createElement('button');
+    btn.className = 'popup-decoy-close';
+    btn.disabled = true;
+    let n = 3;
+    btn.textContent = 'Close available in ' + n + '...';
+    const timer = setInterval(function(){
+      n--;
+      if (n > 0){
+        btn.textContent = 'Close available in ' + n + '...';
+      } else {
+        clearInterval(timer);
+        btn.disabled = false;
+        btn.textContent = 'Close';
+        btn.onclick = closePopup;
+      }
+    }, 800);
+    row.appendChild(btn);
+    bodyEl.after(row);
+
+  } else if (data.type === 'fakeSkip'){
+    bodyEl.textContent = data.body;
+    const row = document.createElement('div');
+    row.className = 'popup-btn-row';
+    const skip = document.createElement('button');
+    skip.className = 'popup-decoy-close';
+    skip.textContent = 'Skip this part';
+    let mocked = false;
+    skip.onclick = function(){
+      if (!mocked){
+        mocked = true;
+        bodyEl.textContent = "Just kidding. There is no skipping. There was never going to be skipping.";
+        skip.textContent = 'Fine, no skipping';
+        skip.onclick = closePopup;
+      }
+    };
+    row.appendChild(skip);
+    bodyEl.after(row);
+
+  } else if (data.type === 'checkin'){
+    bodyEl.textContent = data.body;
+    const row = document.createElement('div');
+    row.className = 'popup-btn-row';
+    const yes = document.createElement('button');
+    yes.className = 'popup-real-close';
+    yes.textContent = 'Yes, still here';
+    yes.onclick = closePopup;
+    const no = document.createElement('button');
+    no.className = 'popup-decoy-close';
+    no.textContent = 'No';
+    no.onclick = function(){
+      bodyEl.textContent = "Then who, exactly, is reading this right now?";
+      no.style.display = 'none';
+    };
+    row.appendChild(yes);
+    row.appendChild(no);
+    bodyEl.after(row);
+
+  } else if (data.type === 'slowUser'){
+    bodyEl.textContent = data.body;
+    const row = document.createElement('div');
+    row.className = 'popup-btn-row';
+    const verify = document.createElement('button');
+    verify.className = 'popup-decoy-close';
+    verify.textContent = 'Verify';
+    let stage = 0;
+    verify.onclick = function(){
+      if (stage === 0){
+        stage = 1;
+        bodyEl.textContent = "Are you human?";
+        verify.textContent = 'Yes';
+        row.appendChild(no);
+      } else if (stage === 1){
+        stage = 2;
+        bodyEl.textContent = "Oh, okay.";
+        verify.textContent = 'Close';
+        verify.onclick = closePopup;
+        no.remove();
+      }
+    };
+    const no = document.createElement('button');
+    no.className = 'popup-real-close';
+    no.textContent = 'No';
+    no.onclick = function(){
+      bodyEl.textContent = "That's concerning. Let's try that again.";
+    };
+    row.appendChild(verify);
+    bodyEl.after(row);
+  }
+}
+
+setInterval(spawnPopup, 30000);
+</script>
+
+</body>
+</html>
